@@ -1,79 +1,139 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.6">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Courier; color: #061539; color: rgba(6, 21, 57, 0.7); -webkit-text-stroke: rgba(6, 21, 57, 0.7)}
-    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Courier; color: #155b23; -webkit-text-stroke: #155b23}
-    span.s1 {font: 12.0px Helvetica; color: #000000; -webkit-text-stroke: 0px #000000}
-    span.s2 {font-kerning: none; color: #0d3ec5; -webkit-text-stroke: 0px #0d3ec5}
-    span.s3 {font-kerning: none}
-    span.s4 {font-kerning: none; color: rgba(6, 21, 57, 0.7); -webkit-text-stroke: 0px rgba(6, 21, 57, 0.7)}
-    span.s5 {font-kerning: none; color: #155b23; -webkit-text-stroke: 0px #155b23}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>호텔 사전 체크인</title>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  
+  <!-- Google Fonts (for clean iOS look) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom, #f0f4f8, #dfe9f3);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    form {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 1.5rem;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #357ABD;
+    }
+
+    @media (max-width: 400px) {
+      form {
+        padding: 1.2rem;
+      }
+
+      input, button {
+        font-size: 0.95rem;
+      }
+    }
   </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;호텔 사전 체크인&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"&gt;&lt;/script&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;h2&gt;호텔 사전 체크인&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;form id="checkin-form"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;label&gt;이름: &lt;input type="text" id="name" required&gt;&lt;/label&gt;&lt;br&gt;&lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;label&gt;방 호수: &lt;input type="number" id="room" required&gt;&lt;/label&gt;&lt;br&gt;&lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button type="submit"&gt;등록&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/form&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// 🔑 Firebase 설정 (여기에 본인 프로젝트 설정 복사)</p>
-<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span></span><span class="s2">const</span><span class="s3"> firebaseConfig = {</span></p>
-<p class="p4"><span class="s4">  apiKey: </span><span class="s3">"AIzaSyD2RwL38m3jy15wUtrnKvwcMErz1DcPL-s"</span><span class="s4">,</span></p>
-<p class="p4"><span class="s4">  authDomain: </span><span class="s3">"team20-61dd7.firebaseapp.com"</span><span class="s4">,</span></p>
-<p class="p4"><span class="s4">  databaseURL: </span><span class="s3">"https://team20-61dd7-default-rtdb.firebaseio.com"</span><span class="s4">,</span></p>
-<p class="p3"><span class="s3">  projectId: </span><span class="s5">"team20-61dd7"</span><span class="s3">,</span></p>
-<p class="p4"><span class="s4">  storageBucket: </span><span class="s3">"team20-61dd7.firebasestorage.app"</span><span class="s4">,</span></p>
-<p class="p3"><span class="s3">  messagingSenderId: </span><span class="s5">"479436179391"</span><span class="s3">,</span></p>
-<p class="p4"><span class="s4">  appId: </span><span class="s3">"1:479436179391:web:8deb6f166c2f68e828430a"</span><span class="s4">,</span></p>
-<p class="p3"><span class="s3">  measurementId: </span><span class="s5">"G-JTN726YSSY"</span></p>
-<p class="p3"><span class="s3">};</span></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Firebase 초기화</p>
-<p class="p1"><span class="Apple-converted-space">    </span>firebase.initializeApp(firebaseConfig);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const db = firebase.database();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// 폼 제출 처리</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('checkin-form').addEventListener('submit', function(e) {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>e.preventDefault();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const name = document.getElementById('name').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const room = document.getElementById('room').value.trim();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>if (name &amp;&amp; room) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const uid = Date.now(); // 간단한 고유 ID</p>
-<p class="p1"><span class="Apple-converted-space">        </span>db.ref('guests/' + uid).set({</p>
-<p class="p1"><span class="Apple-converted-space">          </span>name: name,</p>
-<p class="p1"><span class="Apple-converted-space">          </span>room: parseInt(room),</p>
-<p class="p1"><span class="Apple-converted-space">          </span>face_registered: false</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}).then(() =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">          </span>alert('사전 체크인이 완료되었습니다!');</p>
-<p class="p1"><span class="Apple-converted-space">          </span>document.getElementById('checkin-form').reset();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}).catch((error) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">          </span>alert('오류 발생: ' + error.message);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+  <h2>호텔 사전 체크인</h2>
+  <form id="checkin-form">
+    <label>
+      이름:
+      <input type="text" id="name" required />
+    </label>
+    <label>
+      방 호수:
+      <input type="number" id="room" required />
+    </label>
+    <button type="submit">등록</button>
+  </form>
+
+  <script>
+    // Firebase 설정
+    const firebaseConfig = {
+      apiKey: "AIzaSyD2RwL38m3jy15wUtrnKvwcMErz1DcPL-s",
+      authDomain: "team20-61dd7.firebaseapp.com",
+      databaseURL: "https://team20-61dd7-default-rtdb.firebaseio.com",
+      projectId: "team20-61dd7",
+      storageBucket: "team20-61dd7.appspot.com",
+      messagingSenderId: "479436179391",
+      appId: "1:479436179391:web:8deb6f166c2f68e828430a",
+      measurementId: "G-JTN726YSSY"
+    };
+
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 폼 제출 이벤트
+    document.getElementById('checkin-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const room = document.getElementById('room').value.trim();
+
+      if (name && room) {
+        const guestRef = db.ref('guests').push();
+        guestRef.set({
+          name: name,
+          room: parseInt(room),
+          face_registered: false
+        }).then(() => {
+          alert('사전 체크인이 완료되었습니다!');
+          document.getElementById('checkin-form').reset();
+        }).catch((error) => {
+          alert('오류 발생: ' + error.message);
+        });
+      }
+    });
+  </script>
 </body>
 </html>
