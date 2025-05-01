@@ -118,7 +118,7 @@
   <form id="checkin-form">
     <label>
       이름
-      <input type="text" id="name" required placeholder="이름을 입력하세요" />
+      <input type="text" id="name" required placeholder="영문 이름을 입력하세요" />
     </label>
     <label>
       방 호수
@@ -149,17 +149,36 @@
       e.preventDefault();
 
       const name = document.getElementById('name').value.trim();
-      const room = document.getElementById('room').value.trim();
+      const room = parseInt(document.getElementById('room').value.trim());
 
       if (name && room) {
-        const guestRef = db.ref('guests').push();
-        guestRef.set({
-          name: name,
-          room: parseInt(room),
-          face_registered: false
-        }).then(() => {
-          alert('사전 체크인이 완료되었습니다!');
-          document.getElementById('checkin-form').reset();
+        // Check if the name and room already exist in the database
+        db.ref('guests').orderByChild('name').equalTo(name).once('value', (snapshot) => {
+          let isDuplicate = false;
+          snapshot.forEach((childSnapshot) => {
+            const guest = childSnapshot.val();
+            if (guest.room === room) {
+              isDuplicate = true;
+              return true; // Stop iterating
+            }
+          });
+
+          if (isDuplicate) {
+            alert('이미 체크인 되었습니다.');
+          } else {
+            // Register new guest
+            const guestRef = db.ref('guests').push();
+            guestRef.set({
+              name: name,
+              room: room,
+              face_registered: false
+            }).then(() => {
+              alert('사전 체크인이 완료되었습니다!');
+              document.getElementById('checkin-form').reset();
+            }).catch((error) => {
+              alert('오류 발생: ' + error.message);
+            });
+          }
         }).catch((error) => {
           alert('오류 발생: ' + error.message);
         });
